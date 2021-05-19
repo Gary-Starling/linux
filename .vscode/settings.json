@@ -4,6 +4,11 @@
         "cstdlib": "c",
         "unistd.h": "c",
         "cstdio": "c",
-        "*.tcc": "c"
+        "*.tcc": "c",
+        "sched.h": "c",
+        "cctype": "c",
+        "algorithm": "c",
+        "memory": "c",
+        "random": "c"
     }
 }
