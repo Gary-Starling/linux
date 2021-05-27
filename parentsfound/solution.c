@@ -17,8 +17,8 @@ int main(int argc, char const *argv[])
 
     char out[SIZE_STR];
 
-    if (argc < 2)
-        return 0;
+    //if (argc < 2)
+      //  return 0;
 
     scan_dir(argv[1]);
 

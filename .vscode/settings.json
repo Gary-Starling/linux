@@ -11,6 +11,8 @@
         "memory": "c",
         "random": "c",
         "sys_errlist.h": "c",
-        "sstream": "c"
+        "sstream": "c",
+        "stat.h": "c",
+        "fcntl.h": "c"
     }
 }

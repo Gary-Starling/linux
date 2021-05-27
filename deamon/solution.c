@@ -17,7 +17,7 @@ int main(void)
         return -1;
     else if (pid != 0)
     {
-       // printf("pid deamon : %d \n", pid);
+        //printf("pid deamon : %d \n", pid);
         exit(EXIT_SUCCESS);
     }
     /*Тут основная задача, родитель уже не работает*/
