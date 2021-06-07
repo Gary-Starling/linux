@@ -1,22 +1,21 @@
 #include <stdio.h>
-#include <ctype.h>
 
-int main()
-{
-
-    char str[200];
-
-    fgets(str, 200, stdin);
-
+int main(){
+    
+    int mass[15];
+    
     int i = 0;
-
-    while (str[i])
+    
+    for (i = 0; i < 15; i++)
     {
-        if (isdigit(str[i]))
-            printf("%c ", str[i]);
-        i++;
+        scanf("%d", &mass[i]);
     }
-
-    //printf("%s\n", str);
+    
+    
+    for (i = 14; i >= 0; i--)
+    {
+     printf("%d ", mass[i] );
+    }
+    
     return 0;
 }

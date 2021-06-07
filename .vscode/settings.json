@@ -32,6 +32,14 @@
         "string": "cpp",
         "system_error": "cpp",
         "typeinfo": "cpp",
-        "utility": "cpp"
+        "utility": "cpp",
+        "istream": "cpp",
+        "ostream": "cpp",
+        "iosfwd": "c",
+        "limits": "c",
+        "streambuf": "c",
+        "ip.h": "c",
+        "socket.h": "c",
+        "unordered_map": "c"
     }
 }
