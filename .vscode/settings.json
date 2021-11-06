@@ -51,6 +51,8 @@
         "exception": "cpp",
         "iterator": "cpp",
         "numeric": "cpp",
-        "iostream": "cpp"
+        "iostream": "cpp",
+        "types.h": "c",
+        "uio.h": "c"
     }
 }
