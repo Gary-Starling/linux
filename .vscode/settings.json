@@ -53,6 +53,7 @@
         "numeric": "cpp",
         "iostream": "cpp",
         "types.h": "c",
-        "uio.h": "c"
+        "uio.h": "c",
+        "getopt.h": "c"
     }
 }
