@@ -53,6 +53,9 @@
         "numeric": "cpp",
         "iostream": "cpp",
         "types.h": "c",
-        "uio.h": "c"
+        "uio.h": "c",
+        "stdint.h": "c",
+        "print_up.h": "c",
+        "struct_iovec.h": "c"
     }
 }
