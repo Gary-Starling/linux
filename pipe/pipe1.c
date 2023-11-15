@@ -5,12 +5,12 @@
 #include <stdio.h>
 #include <string.h>
 
+void read_fifo(int fd);
+void write_fifo(int fd);
 
 int main(int argc, char const *argv[])
 {
     int fd;
-    char buff[512];
-    char sym = 'x';
 
     if (argc < 2)
     {
@@ -28,29 +28,50 @@ int main(int argc, char const *argv[])
     }
 
     if (strcmp("read", argv[1]) == 0)
+    {
         fd = open("fifo", O_RDONLY);
+        if (fd < 0)
+            goto err;
+        read_fifo(fd);
+    }
     else if (strcmp("write", argv[1]) == 0)
+    {
         fd = open("fifo", O_WRONLY);
+        if (fd < 0)
+            goto err;
+        write_fifo(fd);
+    }
     else
     {
         printf("arg = [%s], enter [read/write]\n", argv[1]);
         return -1;
     }
 
-    if (fd < 0)
-    {
-        perror("Error open fifo");
-        return -1;
-    }
-
-    sym = getchar();
-    while (sym = '\n')
-    {
-        write(fd, sym, 1);
-        sym = getchar();
-    }
-    
-     
-
     return 0;
+err:
+    perror("Error open fifo");
+    return -1;
+}
+
+void write_fifo(int fd)
+{
+    char sym = 'x';
+
+    printf("Enter [~] to exit program\n");
+    while ((sym = getchar()) != '~')
+        write(fd, &sym, 1);
+}
+
+void read_fifo(int fd)
+{
+    char byte;
+    int res;
+
+    while (1)
+    {
+        res = read(fd, &byte, 1);
+        if (res < 0) break;
+        if(res == 1) putchar(byte);
+        usleep(200);
+    }
 }
