@@ -1,28 +1,37 @@
 #include <signal.h>
 #include <stdio.h>
-#include <ctype.h>
-#include <unistd.h>
-#include <sys/types.h>
 #include <stdlib.h>
 
-
-void mysignal_handler(int signalno)
+void signFunc(int sign)
 {
-    printf("Calll with %d\n", signalno);
-   // exit(0);
-}
+    if (sign != SIGINT)
+    {
+        printf("\nSignnal recived -> %d\n", sign);
+        return;
+    }
+    else
+    {
+        printf("SIGINT recived\n"
+               "Entet 'y' to exit program\n");
+        while (getchar() != 'y')
+            return;
 
+        exit(EXIT_SUCCESS);
+    }
+}
 
 int main(int argc, char const *argv[])
 {
-    pid_t my_pid = getpid();
 
-    signal(SIGINT, mysignal_handler);
+    if (SIG_ERR == signal(SIGINT, signFunc))
+        exit(EXIT_FAILURE);
 
-    while(1)
-        {
-            printf("I am: %d\n", my_pid);
-            usleep(1000000);
-        }
+    if (SIG_ERR == signal(SIGTSTP, signFunc))
+        exit(EXIT_FAILURE);
+
+    printf("Enter CTRL+C to exit program\n");
+    while (1)
+        ;
+
     return 0;
 }
