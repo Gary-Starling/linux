@@ -1,4 +1,4 @@
-//compile -static
+//compile gcc -static trace.c -o trace
 
 #include <stdio.h>
 
@@ -12,5 +12,5 @@ int main(int argc, char const *argv[])
         printf("data[%d] = %d\n", i, data[i]);
         
     printf("ptrace data addr %p\n", &data[0]);
-    //return 0;
+    return 0;
 }
