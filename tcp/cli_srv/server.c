@@ -9,10 +9,14 @@
 
 #define PORT ((unsigned short)(1234))
 
+//TODO: while send all msg/ while recv all msg
+
 int main(int argc, char const *argv[])
 {
     int sd, ns, res_at;
     char buf[1024];
+    const char *server_msg = "Ack from the server\n";
+    const unsigned int smsg_len = strlen(server_msg) + 1;
 
     struct sockaddr_in serv_info;
     struct sockaddr_in cli_info;
@@ -57,17 +61,31 @@ int main(int argc, char const *argv[])
     }
 
     inet_ntop(AF_INET, &cli_info.sin_addr, client_name, sizeof(client_name));
+    printf("Client = %s connected\n", client_name);
 
-    printf("Client = %s\n", client_name);
-    printf("Start session...\n");
     while (1)
     {
-        recv(ns, buf, sizeof(buf),0);
-        printf("server recived: -> %s\n", buf);
-        send(ns, "Server resp\n", strlen("Server resp\n"), 0);
+        printf("Start session...\n");
+        if (recv(ns, buf, sizeof(buf), 0) == -1)
+        {
+            printf("Server recive error\n");
+            break;
+        }
+
+        printf("Recived msg: %s\n", buf);
+
+
+        if (send(ns, server_msg, smsg_len, 0) == -1)
+        {
+            printf("Server send error\n");
+            break;
+        }
 
         if (strstr(buf, "exit") != NULL)
             break;
+
+        printf("Stop session...\n");
+
         memset(buf, 0, sizeof(buf));
     }
 
@@ -75,6 +93,6 @@ int main(int argc, char const *argv[])
 
     close(ns);
     close(sd);
-    
+
     exit(0);
 }

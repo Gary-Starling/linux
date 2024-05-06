@@ -50,7 +50,7 @@ int main(int argc, char const *argv[])
         memset(buf, 0, sizeof(buf));
 
         recv(sd, buf, sizeof(buf), 0);
-        printf("server recived: -> %s\n", buf);
+        printf("@ %s\n", buf);
         memset(buf, 0, sizeof(buf));
     }
 
