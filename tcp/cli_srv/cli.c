@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <netdb.h>
+#include "user_send_recv.h"
 
 #define PORT ((unsigned short)(1234))
 
@@ -14,7 +15,8 @@ int main(int argc, char const *argv[])
     struct sockaddr_in server;
     struct hostent *s;
     int sd, res_at;
-    char buf[1024];
+    char buf[BSIZE] = {0};
+    int ress, resr;
 
     sd = socket(AF_INET, SOCK_STREAM, 0);
     if (sd < 0)
@@ -31,11 +33,12 @@ int main(int argc, char const *argv[])
         exit(EXIT_FAILURE);
     }
 
-    bzero((char *)&server, sizeof(server));
+    printf("Host-name:%s\n", s->h_name);
+
+    memset((char *)&server, 0, sizeof(server));
     server.sin_port = htons(PORT);
     server.sin_family = AF_INET;
-    bcopy((char *)s->h_addr, (char *)&server.sin_addr.s_addr,
-          s->h_length);
+    inet_aton(s->h_name, &server.sin_addr);
 
     if (connect(sd, (struct sockaddr *)&server, sizeof(server)) < 0)
     {
@@ -45,15 +48,29 @@ int main(int argc, char const *argv[])
 
     while (1)
     {
+        /* send to server */
         fgets(buf, sizeof(buf), stdin);
-        send(sd, buf, strlen(buf), 0);
+        if (strstr(buf, "exit") != NULL)
+            break;
+        ress = usend(sd, buf, strlen(buf) + 1, 0);
+        if (ress == -1)
+        {
+            perror("Error send");
+            exit(EXIT_FAILURE);
+        }
         memset(buf, 0, sizeof(buf));
 
-        recv(sd, buf, sizeof(buf), 0);
-        printf("@ %s\n", buf);
+        /* recive from the server */
+        resr = urecv(sd, buf, sizeof(buf), 0);
+        if (resr == -1)
+        {
+            perror("Error recv");
+            exit(EXIT_FAILURE);
+        }
+        printf("%s\n", buf);
         memset(buf, 0, sizeof(buf));
     }
 
     close(sd);
-    return 0;
+    exit(EXIT_SUCCESS);
 }
