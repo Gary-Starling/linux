@@ -1,10 +1,10 @@
-/* 
+/*
 Постановка задачи.
-Необходимо реализовать клиент-серверное приложение под Linux. 
+Необходимо реализовать клиент-серверное приложение под Linux.
 Клиент - программа, запускаемая из консоли
-Сервер - демон, корректно завершающийся по сигналам SIGTERM и SIGHUP. 
+Сервер - демон, корректно завершающийся по сигналам SIGTERM и SIGHUP.
 Клиент должен передать содержимое текстового файла через TCP.
-Сервер должен принять и сохранить в файл. 
+Сервер должен принять и сохранить в файл.
 */
 
 #include <sys/types.h>
@@ -29,10 +29,10 @@ void mysignal_handler(int signal)
     switch (signal)
     {
     case SIGTERM:
-        printf("%d\n", pid_deamon); //Выведем PID демона
+        printf("%d\n", pid_deamon); // Выведем PID демона
         close(client_sock);
         close(serv_sock);
-        exit(0); //Завершим работу
+        exit(0); // Завершим работу
         break;
 
     case SIGHUP:
@@ -61,7 +61,7 @@ void sig_child(int sig) //--функция ожидания завершения
 int server(void)
 {
     pid_t pid;
-    int i;
+    char cwd[1024];
 
     /* создание нового процесса */
     pid = fork();
@@ -85,9 +85,10 @@ int server(void)
     pid_t pid_deamon = getpid();
     /* Покажем свой pid */
     printf("Deamon start, pid = %d\n", pid_deamon);
+    getcwd(cwd, sizeof(cwd));
+    printf("%s\n", cwd);
     /* Далее, создание tcp сервера */
-    serv_sock = socket(AF_INET, SOCK_STREAM, 0); //TCP socket
-    client_sock;
+    serv_sock = socket(AF_INET, SOCK_STREAM, 0); // TCP socket
 
     /*Преобразовать адрес лок интерфейс в бин адр */
     inet_aton("127.0.0.1", &local.sin_addr);
@@ -116,7 +117,6 @@ int server(void)
     signal(SIGHUP, mysignal_handler);
 
     char buf[BUFSIZ] = {0};
-    int cnt_byte_read = 0;
     pid_t pid_proc;
     FILE *fptr;
 
@@ -129,32 +129,22 @@ int server(void)
         {
             if ((pid_proc = fork()) == 0) //--то мы создаем копию нашего сервера
             {
-                cnt_byte_read = read(client_sock, buf, BUFSIZ);
 
-                //Запись данных в файл
-                if (cnt_byte_read != 0)
+                fptr = fopen("./recive.txt", "wb");
+                if (fptr == NULL)
+                    exit(-1);
+                do
                 {
+                    ssize_t cnt_byte_read = recv(client_sock, buf, BUFSIZ, 0);
+                    if (cnt_byte_read == 0)
+                        break;
+                    if (cnt_byte_read < 0)
+                        break;
+                    fwrite(buf, cnt_byte_read, 1, fptr);
+                } while (1);
 
-                    fptr = fopen("/deamon/recive.txt", "a+");
-
-                    if (fptr != NULL)
-                    {
-                        fprintf(fptr, "%s", buf);
-
-                        while (read(client_sock, buf, BUFSIZ) != 0)
-                        {
-                            fprintf(fptr, "%s", buf);
-                            fprintf(fptr, "%s", "\n");
-                        }
-
-                        fclose(fptr);
-                    }
-                }
-
-                cnt_byte_read = 0;
-                memset(buf, '\0', BUFSIZ);
-
-                close(client_sock); // закрываем сокет
+                fclose(fptr);
+                close(client_sock);
                 exit(0);
             }
             else if (pid_proc > 0)
@@ -206,7 +196,7 @@ int client(void)
         printf("send.txt open\n");
 
     fseek(fptr, 0, SEEK_END);
-    long fsize = ftell(fptr);
+    size_t fsize = ftell(fptr);
     rewind(fptr);
 
     char *buff = (char *)malloc(sizeof(char) * fsize);
@@ -259,4 +249,3 @@ int main(int argc, char const *argv[])
 
     return 0;
 }
-
